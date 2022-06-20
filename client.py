@@ -174,6 +174,11 @@ def main():
                         def textSubmit():
                             cli.sendall("Text".encode("utf8"))
                             cli.recv(1024)
+
+                            tittle = tittleBox.get()
+                            cli.sendall(tittle.encode("utf8"))
+                            cli.recv(1024)
+
                             text_content = text_box.get("1.0", END)
   
                             cli.sendall(text_content.encode("utf8"))
@@ -183,8 +188,11 @@ def main():
                             text_box.destroy()
                             main2()
 
+                        tittleBox = Entry(can_addTypeNote, font=("Courier New", 11),fg="black", bd=0)
+                        tittleBox.place(x=105, y=10,width=600,height=100)
+
                         text_box = Text()
-                        text_box.place(x=105, y=20,width=600,height=200)
+                        text_box.place(x=105, y=40,width=600,height=200)
                         SubmitBtn = Button(can_addTypeNote, text="Submit",font=("Candara",11),borderwidth=4, command=textSubmit) 
                         SubmitBtn.place(x=343, y=310, height=27, width=124)
                     
@@ -193,8 +201,13 @@ def main():
                         can_addTypeNote = Canvas(frame1, width = 810, height = 360)
                         can_addTypeNote.pack(fill = "both", expand = True)
                         def textSubmit():
-                            cli.sendall("File".encode("utf8"))
+                            cli.sendall("Image".encode("utf8"))
                             cli.recv(1024)
+
+                            tittle = tittleBox.get()
+                            cli.sendall(tittle.encode("utf8"))
+                            cli.recv(1024)
+
                             filename = (pathEntry.get())
                             filesize =os.path.getsize(filename)
                             cli.sendall(filename.encode("utf8"))
@@ -214,8 +227,11 @@ def main():
                             pathEntry.destroy()
                             main2()
 
+                        tittleBox = Entry(can_addTypeNote, font=("Courier New", 11),fg="black", bd=0)
+                        tittleBox.place(x=105, y=10,width=600,height=100)
+
                         pathEntry = Entry(can_addTypeNote, font=("Courier New", 11),fg="black", bd=0)
-                        pathEntry.place(x=105, y=20,width=600,height=200)
+                        pathEntry.place(x=105, y=150,width=600,height=100)
                         SubmitBtn = Button(can_addTypeNote, text="Submit",font=("Candara",11),borderwidth=4, command=textSubmit) 
                         SubmitBtn.place(x=343, y=310, height=27, width=124)       
 
@@ -226,6 +242,11 @@ def main():
                         def textSubmit():
                             cli.sendall("File".encode("utf8"))
                             cli.recv(1024)
+
+                            tittle = tittleBox.get()
+                            cli.sendall(tittle.encode("utf8"))
+                            cli.recv(1024)
+
                             filename = (pathEntry.get())
                             filesize =os.path.getsize(filename)
                             cli.sendall(filename.encode("utf8"))
@@ -245,10 +266,13 @@ def main():
                             pathEntry.destroy()
                             main2()
 
+                        tittleBox = Entry(can_addTypeNote, font=("Courier New", 11),fg="black", bd=0)
+                        tittleBox.place(x=105, y=10,width=600,height=100)
+
                         pathEntry = Entry(can_addTypeNote, font=("Courier New", 11),fg="black", bd=0)
-                        pathEntry.place(x=105, y=20,width=600,height=200)
+                        pathEntry.place(x=105, y=150,width=600,height=100)
                         SubmitBtn = Button(can_addTypeNote, text="Submit",font=("Candara",11),borderwidth=4, command=textSubmit) 
-                        SubmitBtn.place(x=343, y=310, height=27, width=124)
+                        SubmitBtn.place(x=343, y=310, height=27, width=124)  
 
                     textBtn = Button(can_Note, text="Text",font=("Candara",11),borderwidth=4, command=textNote)
                     textBtn.place(x=156, y=305, height=27, width=124)
@@ -264,25 +288,12 @@ def main():
                 def viewNote():
                     can_show.destroy()
                     cli.sendall("View Note".encode("utf8"))
-                    cli.recv(1024)
-
-                    def textNote():
-                        can_Note.destroy()
-                        can_addTypeNote = Canvas(frame1, width = 810, height = 360)
-                        can_addTypeNote.pack(fill = "both", expand = True)
-
-                        
+                    topicList = cli.recv(1024)
                     can_Note = Canvas(frame1, width = 810, height = 360)
-                    can_Note.pack(fill = "both", expand = True)    
-                    textBtn = Button(can_Note, text="Text",font=("Candara",11),borderwidth=4, command=viewTextNote)
-                    textBtn.place(x=156, y=305, height=27, width=124)
-
-                    imgBtn = Button(can_Note, text="Image",font=("Candara",11),borderwidth=4, command=viewImgNote)
-                    imgBtn.place(x=270, y=305, height=27, width=124)
-
-                    fileBtn = Button(can_Note, text="File",font=("Candara",11),borderwidth=4, command=viewFileNote)
-                    fileBtn.place(x=370, y=305, height=27, width=124)
-
+                    can_Note.pack(fill = "both", expand = True) 
+                    global topicListBox
+                    topicListBox = Listbox(can_Note, yscrollcommand=True)
+                    
                     can_Note.mainloop()
                
 

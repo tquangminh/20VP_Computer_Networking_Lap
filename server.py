@@ -9,7 +9,6 @@ import threading
 import sqlite3
 import os
 
-
 # Read json user file to list
 def readFile():
 	global list_user
@@ -118,8 +117,30 @@ def threaded_client(con, addr):
                     type = con.recv(1024).decode("utf8")
                     con.sendall("Received type note".encode("utf8"))
                     if type == "Text":
-                        content = con.recv(1024).decode("utf8")
+                        tittle = con.recv(1024).decode("utf8")
+                        con.sendall("Recevied tittle".encode("utf8"))
+                        content = con.recv(4096).decode("utf8")
+                    elif type == "Image": 
+                        tittle = con.recv(1024).decode("utf8")
+                        con.sendall("Recevied tittle".encode("utf8"))
+                        filename = con.recv(1024).decode("utf8")
+                        con.sendall('Received File Name'.encode("utf8"))
+                        filesize = con.recv(1024)
+                        con.sendall('Received File Size'.encode("utf8"))
+
+                        filename = "disk/" + os.path.basename(filename)
+                        filesize = int(filesize)
+                        with open(filename, "wb") as f:
+
+                                # read 1024 bytes from the socket (receive)
+                                bytes_read = con.recv(filesize+1024)
+                                # write to the file the bytes we just received
+                                f.write(bytes_read)                                              
+                                    # update the progress bar
+                        content = filename
                     elif type == "File": 
+                        tittle = con.recv(1024).decode("utf8")
+                        con.sendall("Recevied tittle".encode("utf8"))
                         filename = con.recv(1024).decode("utf8")
                         con.sendall('Received File Name'.encode("utf8"))
                         filesize = con.recv(1024)
@@ -150,7 +171,6 @@ def threaded_client(con, addr):
                 else:
                     break
             sqliteConnection.close()
-            print("hi")
     con.close()
 
 #def start server:
