@@ -295,6 +295,49 @@ def main():
                         topicListBox.destroy()     
                         my_canvas.destroy()
                         main2()
+                    def view():
+                        def save():
+                            if type == 'Text':
+                                filename = "clientDisk/" + topicSelected + ".txt"
+                            else: 
+                                filename = "clientDisk/" + os.path.basename(filename)
+                            with open(filename, "wb") as f:
+                                f.write(content)
+                        topicSelected = topicListBox.get(ANCHOR)
+                        topicListBox.destroy()
+                        my_canvas.destroy()
+                        can_viewNote = Canvas(frame1, width = 810, height = 360)
+                        can_viewNote.pack(fill = "both", expand = True)
+                        cli.sendall(topicSelected.encode("utf8"))
+                        type = cli.recv(1024).decode("utf8")
+                        cli.sendall("Received Type".encode("utf8"))
+                        if type == 'Text': 
+                            content = cli.recv(4096)
+                        else: 
+                            filename = cli.recv(1024).decode("utf8")
+                            cli.sendall('Received File Name'.encode("utf8"))
+                            filesize = cli.recv(1024)
+                            filesize = int(filesize)
+                            cli.sendall('Received File Size'.encode("utf8"))
+                            content = cli.recv(filesize + 1024)
+
+                        cli.sendall('Received content'.encode("utf8"))
+                        if type == 'Text': 
+                            can_viewNote.create_text(520,190,text=content, font=("Comic Sans MS",24,'bold'),fill="#400000")
+                        elif type == 'Image':
+                            img = PhotoImage(data=content, format='PNG')
+                            can_viewNote.create_image(20, 20, anchor=NW, image=img)
+                        else: 
+                            can_viewNote.create_text(520,190,text=filename, font=("Comic Sans MS",24,'bold'),fill="#400000")
+                        
+                        saveBtn = Button(can_viewNote, text="Save",font=("Candara",11),borderwidth=4, command=save)
+                            
+
+
+                        
+                            
+
+
                     can_show.destroy()
                     cli.sendall("View Note".encode("utf8"))
                     csvTopicList = cli.recv(1024).decode("utf8")
@@ -312,6 +355,8 @@ def main():
                     backBtn = Button(my_canvas, text="Back",font=("Candara",11),borderwidth=4, command=backViewNote)
                     backBtn.place(x=370, y=305, height=27, width=124)
 
+                    viewBtn = Button(my_canvas, text="View",font=("Candara",11),borderwidth=4, command=view)
+                    viewBtn.place(x=370, y=45, height=27, width=124)
                     my_canvas.mainloop()
 
                 log_out1 = Button(can_show, text="Log out",font=("Candara",11),borderwidth=4,bg="#DB7093", command=log_out)
