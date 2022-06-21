@@ -158,17 +158,15 @@ def main():
                     cli.close()
                     window.destroy()
 
-                
-
                 def addNote():
                     can_show.destroy()
                     cli.sendall("Add Note".encode("utf8"))
                     cli.recv(1024)
-                    can_Note = Canvas(frame1, width = 810, height = 360)
-                    can_Note.pack(fill = "both", expand = True)        
+                    my_canvas = Canvas(frame1, width = 810, height = 360)
+                    my_canvas.pack(fill = "both", expand = True)        
 
                     def textNote():
-                        can_Note.destroy()
+                        my_canvas.destroy()
                         can_addTypeNote = Canvas(frame1, width = 810, height = 360)
                         can_addTypeNote.pack(fill = "both", expand = True)
                         def textSubmit():
@@ -197,7 +195,7 @@ def main():
                         SubmitBtn.place(x=343, y=310, height=27, width=124)
                     
                     def imgNote():
-                        can_Note.destroy()
+                        my_canvas.destroy()
                         can_addTypeNote = Canvas(frame1, width = 810, height = 360)
                         can_addTypeNote.pack(fill = "both", expand = True)
                         def textSubmit():
@@ -236,7 +234,7 @@ def main():
                         SubmitBtn.place(x=343, y=310, height=27, width=124)       
 
                     def fileNote():
-                        can_Note.destroy()
+                        my_canvas.destroy()
                         can_addTypeNote = Canvas(frame1, width = 810, height = 360)
                         can_addTypeNote.pack(fill = "both", expand = True)
                         def textSubmit():
@@ -274,29 +272,47 @@ def main():
                         SubmitBtn = Button(can_addTypeNote, text="Submit",font=("Candara",11),borderwidth=4, command=textSubmit) 
                         SubmitBtn.place(x=343, y=310, height=27, width=124)  
 
-                    textBtn = Button(can_Note, text="Text",font=("Candara",11),borderwidth=4, command=textNote)
+                    def backAddNote():
+                        my_canvas.destroy()
+                        main2()
+
+                    textBtn = Button(my_canvas, text="Text",font=("Candara",11),borderwidth=4, command=textNote)
                     textBtn.place(x=156, y=305, height=27, width=124)
 
-                    imgBtn = Button(can_Note, text="Image",font=("Candara",11),borderwidth=4, command=imgNote)
+                    imgBtn = Button(my_canvas, text="Image",font=("Candara",11),borderwidth=4, command=imgNote)
                     imgBtn.place(x=270, y=305, height=27, width=124)
 
-                    fileBtn = Button(can_Note, text="File",font=("Candara",11),borderwidth=4, command=fileNote)
+                    fileBtn = Button(my_canvas, text="File",font=("Candara",11),borderwidth=4, command=fileNote)
                     fileBtn.place(x=370, y=305, height=27, width=124)
+                    
+                    backBtn = Button(my_canvas, text="Back",font=("Candara",11),borderwidth=4, command=backAddNote)
+                    backBtn.place(x=370, y=305, height=27, width=124)
 
-                    can_Note.mainloop()
+                    my_canvas.mainloop()
 
                 def viewNote():
+                    def backViewNote():
+                        topicListBox.destroy()     
+                        my_canvas.destroy()
+                        main2()
                     can_show.destroy()
                     cli.sendall("View Note".encode("utf8"))
-                    topicList = cli.recv(1024)
-                    can_Note = Canvas(frame1, width = 810, height = 360)
-                    can_Note.pack(fill = "both", expand = True) 
-                    global topicListBox
-                    topicListBox = Listbox(can_Note, yscrollcommand=True)
-                    
-                    can_Note.mainloop()
-               
+                    csvTopicList = cli.recv(1024).decode("utf8")
+                    TopicList = map(str.strip, csvTopicList.split(','))
+                    my_canvas = Canvas(frame1, width = 810, height = 360)
+                    my_canvas.pack(fill = "both", expand = True) 
 
+                    scrollbar = Scrollbar()
+                    topicListBox = Listbox(yscrollcommand = scrollbar.set)
+                    topicListBox.place(x=70, y=30, height=270, width=124)
+                    
+                    for i in TopicList:
+                        topicListBox.insert(END, i)
+                               
+                    backBtn = Button(my_canvas, text="Back",font=("Candara",11),borderwidth=4, command=backViewNote)
+                    backBtn.place(x=370, y=305, height=27, width=124)
+
+                    my_canvas.mainloop()
 
                 log_out1 = Button(can_show, text="Log out",font=("Candara",11),borderwidth=4,bg="#DB7093", command=log_out)
                 log_out1.place(x=31, y=305, height=27, width=122)

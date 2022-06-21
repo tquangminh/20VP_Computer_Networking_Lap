@@ -47,7 +47,7 @@ def checkSignUp(username, password):
     sqliteConnection = sqlite3.connect('user_note.db')
     cursor = sqliteConnection.cursor()
     
-    cursor.execute("CREATE TABLE '%s' ('noteId' INTEGER NOT NULL, 'type' TEXT NOT NULL, 'content' TEXT, PRIMARY KEY('noteId' AUTOINCREMENT));"%(username))
+    cursor.execute("CREATE TABLE '%s' ('noteId' INTEGER NOT NULL, 'type' TEXT NOT NULL, 'tittle' TEXT, 'content' TEXT, PRIMARY KEY('noteId' AUTOINCREMENT));"%(username))
     sqliteConnection.commit()
     cursor.close()
     sqliteConnection.close()
@@ -159,15 +159,24 @@ def threaded_client(con, addr):
 
                     try:
                         cursor = sqliteConnection.cursor()
-                        cursor.execute("INSERT INTO %s (type,content) VALUES ('%s', '%s')" %(username, type, content))
+                        cursor.execute("INSERT INTO %s (type,tittle,content) VALUES ('%s', '%s', '%s')" %(username, type, tittle, content))
                         sqliteConnection.commit()
                         con.sendall("Saved".encode("utf8"))
                         cursor.close()
                     except: 
                         con.sendall("Cannot Saved".encode("utf8"))
 
-                elif req == "View Note": 
-                    con.sendall("Receving view note request".encode("utf8"))
+                elif req == "View Note":
+                    sqliteConnection = sqlite3.connect('user_note.db') 
+                    cursor = sqliteConnection.cursor()
+                    cursor.execute("Select tittle from %s"%(username))
+                    topicList = cursor.fetchall()
+                    csvTopicList = topicList[0][0]
+                    for i in topicList[1:]:
+                        csvTopicList += "," + i[0]
+                    cursor.close()
+                    sqliteConnection.close()
+                    con.sendall(csvTopicList.encode("utf8"))
                 else:
                     break
             sqliteConnection.close()
