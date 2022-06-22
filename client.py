@@ -1,11 +1,15 @@
+import imp
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog
 import socket
 import os,sys
+import io
+from PIL import Image, ImageTk
 
 window = Tk()
+window.resizable(False, False) 
 window.title('Client')
 
 def resource_path(relative_path):
@@ -169,7 +173,7 @@ def main():
                         my_canvas.destroy()
                         can_addTypeNote = Canvas(frame1, width = 810, height = 360)
                         can_addTypeNote.pack(fill = "both", expand = True)
-                        def textSubmit():
+                        def Submit():
                             cli.sendall("Text".encode("utf8"))
                             cli.recv(1024)
 
@@ -191,14 +195,14 @@ def main():
 
                         text_box = Text()
                         text_box.place(x=105, y=40,width=600,height=200)
-                        SubmitBtn = Button(can_addTypeNote, text="Submit",font=("Candara",11),borderwidth=4, command=textSubmit) 
+                        SubmitBtn = Button(can_addTypeNote, text="Submit",font=("Candara",11),borderwidth=4, command=Submit) 
                         SubmitBtn.place(x=343, y=310, height=27, width=124)
                     
                     def imgNote():
                         my_canvas.destroy()
                         can_addTypeNote = Canvas(frame1, width = 810, height = 360)
                         can_addTypeNote.pack(fill = "both", expand = True)
-                        def textSubmit():
+                        def Submit():
                             cli.sendall("Image".encode("utf8"))
                             cli.recv(1024)
 
@@ -230,14 +234,14 @@ def main():
 
                         pathEntry = Entry(can_addTypeNote, font=("Courier New", 11),fg="black", bd=0)
                         pathEntry.place(x=105, y=150,width=600,height=100)
-                        SubmitBtn = Button(can_addTypeNote, text="Submit",font=("Candara",11),borderwidth=4, command=textSubmit) 
+                        SubmitBtn = Button(can_addTypeNote, text="Submit",font=("Candara",11),borderwidth=4, command=Submit) 
                         SubmitBtn.place(x=343, y=310, height=27, width=124)       
 
                     def fileNote():
                         my_canvas.destroy()
                         can_addTypeNote = Canvas(frame1, width = 810, height = 360)
                         can_addTypeNote.pack(fill = "both", expand = True)
-                        def textSubmit():
+                        def Submit():
                             cli.sendall("File".encode("utf8"))
                             cli.recv(1024)
 
@@ -269,7 +273,7 @@ def main():
 
                         pathEntry = Entry(can_addTypeNote, font=("Courier New", 11),fg="black", bd=0)
                         pathEntry.place(x=105, y=150,width=600,height=100)
-                        SubmitBtn = Button(can_addTypeNote, text="Submit",font=("Candara",11),borderwidth=4, command=textSubmit) 
+                        SubmitBtn = Button(can_addTypeNote, text="Submit",font=("Candara",11),borderwidth=4, command=Submit) 
                         SubmitBtn.place(x=343, y=310, height=27, width=124)  
 
                     def backAddNote():
@@ -286,7 +290,7 @@ def main():
                     fileBtn.place(x=370, y=305, height=27, width=124)
                     
                     backBtn = Button(my_canvas, text="Back",font=("Candara",11),borderwidth=4, command=backAddNote)
-                    backBtn.place(x=370, y=305, height=27, width=124)
+                    backBtn.place(x=470, y=305, height=27, width=124)
 
                     my_canvas.mainloop()
 
@@ -297,6 +301,7 @@ def main():
                         main2()
                     def view():
                         def save():
+                            global filename
                             if type == 'Text':
                                 filename = "clientDisk/" + topicSelected + ".txt"
                             else: 
@@ -307,13 +312,14 @@ def main():
                         topicListBox.destroy()
                         my_canvas.destroy()
                         can_viewNote = Canvas(frame1, width = 810, height = 360)
-                        can_viewNote.pack(fill = "both", expand = True)
+                        can_viewNote.pack(fill = "both", expand = False)
                         cli.sendall(topicSelected.encode("utf8"))
                         type = cli.recv(1024).decode("utf8")
                         cli.sendall("Received Type".encode("utf8"))
                         if type == 'Text': 
                             content = cli.recv(4096)
                         else: 
+                            global filename
                             filename = cli.recv(1024).decode("utf8")
                             cli.sendall('Received File Name'.encode("utf8"))
                             filesize = cli.recv(1024)
@@ -321,17 +327,18 @@ def main():
                             cli.sendall('Received File Size'.encode("utf8"))
                             content = cli.recv(filesize + 1024)
 
-                        cli.sendall('Received content'.encode("utf8"))
                         if type == 'Text': 
                             can_viewNote.create_text(520,190,text=content, font=("Comic Sans MS",24,'bold'),fill="#400000")
                         elif type == 'Image':
-                            img = PhotoImage(data=content, format='PNG')
-                            can_viewNote.create_image(20, 20, anchor=NW, image=img)
+                            img = ImageTk.PhotoImage(Image.open(io.BytesIO(content)))
+                            panel = Label(can_viewNote, image = img)
+                            panel.pack(side = "top", fill = "none", expand = "false")
                         else: 
                             can_viewNote.create_text(520,190,text=filename, font=("Comic Sans MS",24,'bold'),fill="#400000")
                         
                         saveBtn = Button(can_viewNote, text="Save",font=("Candara",11),borderwidth=4, command=save)
-                            
+                        saveBtn.place(x=370, y=305, height=27, width=124)
+                        can_viewNote.mainloop()
 
 
                         

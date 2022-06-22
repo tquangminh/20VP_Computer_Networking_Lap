@@ -16,6 +16,7 @@ def readFile():
 		data = json.load(json_file)
 		for i in data['Information of Users']:
 			list_user.extend((i['username'], i['password']))
+            
 # Write json user file
 def writeFile(info):
 	with open('users.json', 'r+') as file:
@@ -133,7 +134,7 @@ def threaded_client(con, addr):
                         with open(filename, "wb") as f:
 
                                 # read 1024 bytes from the socket (receive)
-                                bytes_read = con.recv(filesize+1024)
+                                bytes_read = con.recv(filesize+1024) 
                                 # write to the file the bytes we just received
                                 f.write(bytes_read)                                              
                                     # update the progress bar
@@ -220,8 +221,6 @@ def start_server():
             con, addr = s.accept()
             print("Connected to: " + str(addr))
             iden = con.recv(1024).decode("utf8")
-            # if iden == "Connect":
-            #     con.sendall("Connected".encode("utf8"))
             if iden == "Client":
                 con.sendall("Welcome Client".encode("utf8"))
                 client = threading.Thread(target=threaded_client, args=(con,addr))

@@ -1,44 +1,12 @@
 {
     "Information of Users": [
         {
-            "username": "b",
+            "username": "a",
             "password": "a"
         },
         {
-            "username": "qminh",
-            "password": "1"
-        },
-        {
-            "username": "qminh1",
-            "password": "1"
-        },
-        {
-            "username": "p",
-            "password": "1"
-        },
-        {
-            "username": "m",
-            "password": "1"
-        },
-        {
-            "username": "d",
-            "password": "1"
-        },
-        {
-            "username": "d",
-            "password": "1"
-        },
-        {
-            "username": "a",
-            "password": "1"
-        },
-        {
-            "username": "s",
-            "password": "1"
-        },
-        {
-            "username": "e",
-            "password": "1"
+            "username": "admin",
+            "password": "admin"
         }
     ]
 }
