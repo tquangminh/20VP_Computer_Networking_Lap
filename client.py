@@ -254,7 +254,8 @@ def main():
                         text_box.place(x=105, y=130,width=600,height=150)
                         SubmitBtn = Button(can_addTypeNote, text="Submit",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command=Submit) 
                         SubmitBtn.place(x=310, y=310, height=27, width=124)
-                    
+                        BackBtn = Button(can_addTypeNote, text="Back",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF") 
+                        BackBtn.place(x=10, y=310, height=27, width=124)
                     def imgNote():
                         my_canvas.destroy()
                         can_addTypeNote = Canvas(frame1, width = 810, height = 360, bg = "#ffffff", 
@@ -320,7 +321,9 @@ def main():
 
                         SubmitBtn = Button(can_addTypeNote, text="Submit",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command=Submit)
 
-                        SubmitBtn.place(x=343, y=310, height=27, width=124)       
+                        SubmitBtn.place(x=343, y=310, height=27, width=124)  
+                        BackBtn = Button(can_addTypeNote, text="Back",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF") 
+                        BackBtn.place(x=10, y=310, height=27, width=124)     
 
                     def fileNote():
                         my_canvas.destroy()
@@ -389,6 +392,8 @@ def main():
                        
                         SubmitBtn = Button(can_addTypeNote, text="Submit",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command=Submit) 
                         SubmitBtn.place(x=343, y=310, height=27, width=124)  
+                        BackBtn = Button(can_addTypeNote, text="Back",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF") 
+                        BackBtn.place(x=10, y=310, height=27, width=124)   
                        
 
                     def backAddNote():
