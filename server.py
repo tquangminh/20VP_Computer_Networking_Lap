@@ -117,7 +117,11 @@ def threaded_client(con, addr):
                     con.sendall("Received adding note request".encode("utf8"))
                     type = con.recv(1024).decode("utf8")
                     con.sendall("Received type note".encode("utf8"))
-                    if type == "Text":
+                    if type == "Back":
+                        continue
+                    elif type == "Back File":
+                        continue
+                    elif type == "Text":
                         tittle = con.recv(1024).decode("utf8")
                         con.sendall("Recevied tittle".encode("utf8"))
                         content = con.recv(4096).decode("utf8")
@@ -168,46 +172,48 @@ def threaded_client(con, addr):
                         con.sendall("Cannot Saved".encode("utf8"))
 
                 elif req == "View Note":
-                    sqliteConnection = sqlite3.connect('user_note.db') 
                     cursor = sqliteConnection.cursor()
                     cursor.execute("Select tittle from %s"%(username))
                     topicList = cursor.fetchall()
-                    csvTopicList = topicList[0][0]
-                    for i in topicList[1:]:
-                        csvTopicList += "," + i[0]
-
+                    csvTopicList = 'NullTopic'
+                    try:
+                        csvTopicList = topicList[0][0]
+                        for i in topicList[1:]:
+                            csvTopicList += "," + i[0]
+                    except:
+                        pass
                     con.sendall(csvTopicList.encode("utf8"))
                     topicSelected = con.recv(1024).decode("utf8")
-                    
-                    cursor.execute("Select type, content from %s where tittle == '%s' "%(username, topicSelected))
-                    type_content = cursor.fetchall()
+                    if topicSelected == 'Back':
+                        con.sendall("Receive request".encode('utf8'))
+                        continue   
+                    else:    
+                        cursor.execute("Select type, content from %s where tittle == '%s' "%(username, topicSelected))
+                        type_content = cursor.fetchall()
 
-                    if type_content[0][0] == 'Text':
-                        con.sendall('Text'.encode("utf8"))
-                        con.recv(1024)
-                        con.sendall(type_content[0][1].encode("utf8"))
-                    elif type_content[0][0] == 'File' or type_content[0][0] == 'Image':
-                        if type_content[0][0] == 'File':
-                            con.sendall('File'.encode("utf8"))
-                        else: 
-                            con.sendall('Image'.encode("utf8"))
-                        con.recv(1024)
-                        filename = (type_content[0][1])
-                        filesize =os.path.getsize(filename)
-                        con.sendall(filename.encode("utf8"))
-                        con.recv(1024)
-                        
-                        con.sendall(str(filesize).encode("utf8"))
-                        con.recv(1024)
+                        if type_content[0][0] == 'Text':
+                            con.sendall('Text'.encode("utf8"))
+                            con.recv(1024)
+                            con.sendall(type_content[0][1].encode("utf8"))
+                        elif type_content[0][0] == 'File' or type_content[0][0] == 'Image':
+                            if type_content[0][0] == 'File':
+                                con.sendall('File'.encode("utf8"))
+                            else: 
+                                con.sendall('Image'.encode("utf8"))
+                            con.recv(1024)
+                            filename = (type_content[0][1])
+                            filesize =os.path.getsize(filename)
+                            con.sendall(filename.encode("utf8"))
+                            con.recv(1024)
+                            
+                            con.sendall(str(filesize).encode("utf8"))
+                            con.recv(1024)
 
-                        with open(filename, "rb") as f:
-                                # read the bytes from the file
-                                bytes_read = f.read(filesize+1024)
-                                con.sendall(bytes_read)
-                    cursor.close()
-                    sqliteConnection.close()
-
-
+                            with open(filename, "rb") as f:
+                                    # read the bytes from the file
+                                    bytes_read = f.read(filesize+1024)
+                                    con.sendall(bytes_read)
+                        cursor.close()
                 else:
                     break
             sqliteConnection.close()
@@ -234,7 +240,7 @@ def start_server():
 
 #server_thread
 def server_thread():
-    root.config(bg="green")
+    root.config(bg="#2ecc71")
     global stop_thread
     stop_thread = False
 
