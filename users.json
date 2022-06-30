@@ -1,12 +1,12 @@
 {
     "Information of Users": [
         {
-            "username": "a",
-            "password": "a"
-        },
-        {
             "username": "admin",
             "password": "admin"
+        },
+        {
+            "username": "a",
+            "password": "a"
         }
     ]
 }

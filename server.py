@@ -178,34 +178,36 @@ def threaded_client(con, addr):
 
                     con.sendall(csvTopicList.encode("utf8"))
                     topicSelected = con.recv(1024).decode("utf8")
-                    
-                    cursor.execute("Select type, content from %s where tittle == '%s' "%(username, topicSelected))
-                    type_content = cursor.fetchall()
+                    if topicSelected == 'Back':
+                        continue   
+                    else:              
+                        cursor.execute("Select type, content from %s where tittle == '%s' "%(username, topicSelected))
+                        type_content = cursor.fetchall()
 
-                    if type_content[0][0] == 'Text':
-                        con.sendall('Text'.encode("utf8"))
-                        con.recv(1024)
-                        con.sendall(type_content[0][1].encode("utf8"))
-                    elif type_content[0][0] == 'File' or type_content[0][0] == 'Image':
-                        if type_content[0][0] == 'File':
-                            con.sendall('File'.encode("utf8"))
-                        else: 
-                            con.sendall('Image'.encode("utf8"))
-                        con.recv(1024)
-                        filename = (type_content[0][1])
-                        filesize =os.path.getsize(filename)
-                        con.sendall(filename.encode("utf8"))
-                        con.recv(1024)
-                        
-                        con.sendall(str(filesize).encode("utf8"))
-                        con.recv(1024)
+                        if type_content[0][0] == 'Text':
+                            con.sendall('Text'.encode("utf8"))
+                            con.recv(1024)
+                            con.sendall(type_content[0][1].encode("utf8"))
+                        elif type_content[0][0] == 'File' or type_content[0][0] == 'Image':
+                            if type_content[0][0] == 'File':
+                                con.sendall('File'.encode("utf8"))
+                            else: 
+                                con.sendall('Image'.encode("utf8"))
+                            con.recv(1024)
+                            filename = (type_content[0][1])
+                            filesize =os.path.getsize(filename)
+                            con.sendall(filename.encode("utf8"))
+                            con.recv(1024)
+                            
+                            con.sendall(str(filesize).encode("utf8"))
+                            con.recv(1024)
 
-                        with open(filename, "rb") as f:
-                                # read the bytes from the file
-                                bytes_read = f.read(filesize+1024)
-                                con.sendall(bytes_read)
-                    cursor.close()
-                    sqliteConnection.close()
+                            with open(filename, "rb") as f:
+                                    # read the bytes from the file
+                                    bytes_read = f.read(filesize+1024)
+                                    con.sendall(bytes_read)
+                        cursor.close()
+                        sqliteConnection.close()
 
 
                 else:
@@ -234,7 +236,7 @@ def start_server():
 
 #server_thread
 def server_thread():
-    root.config(bg="green")
+    root.config(bg="#2ecc71")
     global stop_thread
     stop_thread = False
 
