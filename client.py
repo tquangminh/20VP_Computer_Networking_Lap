@@ -10,6 +10,7 @@ import socket
 import os,sys
 import io
 import tkinter as tk
+from turtle import back
 from PIL import Image, ImageTk
 
 window = Tk()
@@ -98,7 +99,7 @@ def main():
         global hide_show
         hide_show.destroy()
         hide_show = Button(my_canvas, image=hide,bd=0,command=hidePW)
-        hide_show.place(x = 270,y = 200,width=25,height=35)
+        hide_show.place(x =270,y =200,width=25,height=35)
         pw_entry.config(show="")
     def hidePW():
         global hide_show
@@ -308,7 +309,7 @@ def main():
                             filename2 = filedialog.askopenfilename(filetypes=[('Image Files', '*.jpeg *.png *.jpg *.gif')])
                             print('Selected:', filename2)
                             pathDisplay = Label(can_addTypeNote,font = Fira_Sans, text = filename2,fg='#63cdda', bg = '#fff8ee')
-                            pathDisplay.place(x = 220, y = 260)
+                            pathDisplay.place(x = 220, y = 260, width = 400)
 
                         
                         pathEntry = Button(can_addTypeNote, text='Select Image',font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command=UploadAction)
@@ -376,7 +377,7 @@ def main():
                             filename3 = filedialog.askopenfilename()
                             print('Selected:', filename3)
                             pathDisplay = Label(can_addTypeNote,font = Fira_Sans, text = filename3,fg='#63cdda', bg = '#fff8ee')
-                            pathDisplay.place(x = 220, y = 260)
+                            pathDisplay.place(x = 220, y = 260, width = 400)
 
 
 
@@ -424,10 +425,12 @@ def main():
                             global filename
                             if type == 'Text':
                                 filename = "clientDisk/" + topicSelected + ".txt"
+                                
                             else: 
                                 filename = "clientDisk/" + os.path.basename(filename)
                             with open(filename, "wb") as f:
                                 f.write(content)
+                            messagebox.showinfo("Saved","Saved Successully")
                         topicSelected = topicListBox.get(ANCHOR)
                         topicListBox.destroy()
                         my_canvas.destroy()
@@ -458,11 +461,16 @@ def main():
                             panel = Label(can_viewNote, image = img, relief = GROOVE)
                          
                             panel.place(x = 100, y = 71, height = 500, width = 500)
+                            
                         else: 
                             can_viewNote.create_text(520,190,text=filename, font=("Comic Sans MS",24,'bold'),fill="#400000")
                         
                         saveBtn = Button(can_viewNote, text="Save",font=Fira_Sans,borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command=save)
+
                         saveBtn.place(x=400, y=616, height=40, width=200)
+
+                        backBtn = Button(can_viewNote, text = "Back", font = Fira_Sans, borderwidth= 2, bg="#63cdda",fg = "#FFFFFF")
+                        backBtn.place(x = 100, y = 616, height = 40, width = 200)
                         can_viewNote.mainloop()
 
 
@@ -601,68 +609,76 @@ def main():
             cli.close()
 
         my_canvas.destroy()
-        my_canvas_sign = Canvas(frame1, width = 1024, height = 640)
+   
+   
+    
+    
+
+
+    
+        my_canvas_sign = Canvas(frame1, width = 362, height = 404)
+        my_canvas_sign.configure(background = "#d78e8e")
         my_canvas_sign.pack(fill = "both", expand = True)
         
-        my_canvas_sign.create_text(x+90,y-50,text="Sign up", font=("Comic Sans MS",24,'bold'),fill="#400000")
-        my_canvas_sign.create_text(x+25,y-10,text="Username:", font=("Verdana",11,'bold'),fill = txt_cl)
-        my_canvas_sign.create_text(x+23,y+40,text="Password:", font=("Verdana",11,'bold'),fill = txt_cl)
-        my_canvas_sign.create_text(x+56,y+90,text="Confirm password:", font=("Verdana",11,'bold'),fill = txt_cl)
+        
+        my_canvas_sign.create_text(180,80,text="Sign up", font=("Inter",24,'bold'),fill="#303952")
+        un_entry_signup = Entry(my_canvas_sign, font=("Montserrat", 13),fg="#303952",bg = "#ebc6c6", bd=0)
+        un_entry_signup.place(x=75, y=150,width=220,height=35)
 
-        un_entry_signup = Entry(my_canvas_sign, font=("Courier New", 11),fg="black", bd=0)
-        un_entry_signup.place(x=x-19, y=y,width=220,height=25)
         un_entry_signup.insert(0,"Enter username")
 
-        pw_entry_signup = Entry(my_canvas_sign, font=("Courier New", 11),fg="black", bd=0)
-        pw_entry_signup.place(x=x-19, y=y+50,width=195,height=25)
+        pw_entry_signup = Entry(my_canvas_sign, font=("Montserrat", 13),fg="#303952",bg = "#ebc6c6", bd=0)
+        pw_entry_signup.place(x=75, y=200,width=220,height=35)
         pw_entry_signup.insert(0,"Enter password")
 
-        pw_confirm_entry = Entry(my_canvas_sign, font=("Courier New", 11),fg="black", bd=0)
+        pw_confirm_entry = Entry(my_canvas_sign, font=("Montserrat", 13),fg="#303952",bg = "#ebc6c6", bd=0)
         pw_confirm_entry.insert(0,"Enter password again")
-        pw_confirm_entry.place(x=x-19, y=y+100,width=195,height=25)
+
+        pw_confirm_entry.place(x=75, y=250,width=220,height=35)
 
         def showPW_signup():
             global hide_show1
             hide_show1.destroy()
             hide_show1 = Button(my_canvas_sign, image=hide,bd=0,command=hidePW_signup)
-            hide_show1.place(x=x+176,y=y+50,width=25,height=25)
+            hide_show1.place(x=270,y=200,width=25,height=35)
             pw_entry_signup.config(show="")
         def hidePW_signup():
             global hide_show1
             hide_show1.destroy()
             hide_show1 = Button(my_canvas_sign, image=show,bd=0,command=showPW_signup)
-            hide_show1.place(x=x+176,y=y+50,width=25,height=25,)
+            hide_show1.place(x=270,y=200,width=25,height=35,)
             pw_entry_signup.config(show="●")
-
+            
         global hide_show1
         hide_show1 = Button(my_canvas_sign, image=show,bd=0, command=showPW_signup)
-        hide_show1.place(x=x+176,y=y+50,width=25,height=25)
+        hide_show1.place(x=270,y=200,width=25,height=35)
 
         def showPW_signupCF():
             global hide_show2
             hide_show2.destroy()
             hide_show2 = Button(my_canvas_sign, image=hide,bd=0,command=hidePW_signupCF)
-            hide_show2.place(x=x+176,y=y+100,width=25,height=25)
+            hide_show2.place(x=270,y=250,width=25,height=35)
             pw_confirm_entry.config(show="")
         def hidePW_signupCF():
             global hide_show2
             hide_show2.destroy()
             hide_show2 = Button(my_canvas_sign, image=show,bd=0,command=showPW_signupCF)
-            hide_show2.place(x=x+176,y=y+100,width=25,height=25,)
+            hide_show2.place(x=270,y=250,width=25,height=35)
             pw_confirm_entry.config(show="●")
 
         global hide_show2
         hide_show2 = Button(my_canvas_sign, image=show,bd=0, command=showPW_signupCF)
-        hide_show2.place(x=x+176,y=y+100,width=25,height=25)
+        hide_show2.place(x=270,y=250,width=25,height=35)
         
         un_entry_signup.bind("<FocusIn>", entry_clear_unsu)
         pw_entry_signup.bind("<FocusIn>", entry_clear_pwsu)
         pw_confirm_entry.bind("<FocusIn>", entry_clear_pwa)
 
-        signup_btn2 = Button(my_canvas_sign, text="Sign up",font=("Fira", 16,'bold'), width=16,fg="#336d92",bd=4, command = sign_up)
-        signup_btn2.place(x=x-20, y=y+140)
-        back_login = Button(my_canvas_sign, text="Back to login",font=("Fira", 16,'bold'), width=16,fg="#336d92",bd=4, command = back)
-        back_login.place(x=x-20, y=y+190)
+        signup_btn2 = Button(my_canvas_sign, text="Sign up",font=("Fira", 16,'bold'), width=17,fg="#d78e8e",bd = 0, command = sign_up)
+        signup_btn2.place(x=70, y=300)
+   
+        back_login = Button(my_canvas_sign, text="Back to login",font=("Fira", 16,'bold'), width=17,fg="#d78e8e",bd=0, command = back)
+        back_login.place(x=70, y = 350)
 
    
   
