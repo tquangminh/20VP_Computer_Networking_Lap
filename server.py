@@ -1,13 +1,9 @@
-import socket
+import socket, json, threading, sqlite3, os
 import tkinter
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from tkinter.ttk import *
 from tkinter import messagebox 
-import json
-import threading
-import sqlite3
-import os
 
 # Read json user file to list
 def readFile():
