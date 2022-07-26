@@ -25,8 +25,8 @@ def resource_path(relative_path):
 
     return os.path.join(os.path.abspath("."), relative_path)
 
-link = resource_path("show.png")
-link2 = resource_path("hide.png")
+link = resource_path("img/show.png")
+link2 = resource_path("img/hide.png")
 show = PhotoImage(file = link)
 hide = PhotoImage(file = link2)
 
@@ -61,14 +61,9 @@ def EnterIP():
     
     
     def checkIP():
-        hostname = socket.gethostname()
-        ip_addr = socket.gethostbyname(hostname)
-        HOST = str(ip_addr)
+        global HOST, PORT
+        HOST = ip_entry.get()
         PORT = 1239
-
-        if ip_entry.get() != HOST:
-            messagebox.showinfo("Status", "Wrong IP")
-            return
 
         try:
             cli = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -128,11 +123,6 @@ def main():
                 messagebox.showinfo("Status", "Password must contain no space character")
                 return
         
-        hostname = socket.gethostname()
-        ip_addr = socket.gethostbyname(hostname)
-        HOST = str(ip_addr)
-        PORT = 1239
-
         cli = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
         try:
@@ -174,7 +164,7 @@ def main():
                     highlightthickness = 0,
                     relief = "ridge")
                 
-                background_img = PhotoImage(file = f"background.png")
+                background_img = PhotoImage(file = f"img/background.png")
                 background = can_show.create_image(
                     405, 180,
                     image=background_img)
@@ -205,7 +195,7 @@ def main():
                         highlightthickness = 0,
                         relief = "ridge")
                     
-                    background_img = PhotoImage(file = f"background2.png")
+                    background_img = PhotoImage(file = f"img/background2.png")
                     background = my_canvas.create_image(
                         405, 180,
                         image=background_img)
@@ -289,6 +279,14 @@ def main():
                         can_addTypeNote.pack(fill = "both", expand = True)
 
                         def Submit():
+                            try: 
+                                filename = filename3
+                            except:
+                                messagebox.showinfo('File not found')
+                                can_addTypeNote.destroy()
+                                pathEntry.destroy()
+                                imgNote()
+                            
                             cli.sendall("Image".encode("utf8"))
                             cli.recv(1024)
 
@@ -296,7 +294,7 @@ def main():
                             cli.sendall(tittle.encode("utf8"))
                             cli.recv(1024)
 
-                            filename = filename2
+
                             filesize =os.path.getsize(filename)
                             cli.sendall(filename.encode("utf8"))
                             cli.recv(1024)
@@ -361,9 +359,13 @@ def main():
 
                         can_addTypeNote.pack(fill = "both", expand = True)
 
-                       
 
                         def Submit():
+                            try: 
+                                filename = filename3
+                            except:
+                                messagebox.showinfo('File not found')
+                                
                             cli.sendall("File".encode("utf8"))
                             cli.recv(1024)
 
@@ -371,7 +373,7 @@ def main():
                             cli.sendall(tittle.encode("utf8"))
                             cli.recv(1024)
 
-                            filename = filename3
+                            
                             filesize =os.path.getsize(filename)
                             cli.sendall(filename.encode("utf8"))
                             cli.recv(1024)
@@ -522,7 +524,7 @@ def main():
                     highlightthickness = 0,
                     relief = "ridge")
                 
-                    background_img = PhotoImage(file = f"background2.png")
+                    background_img = PhotoImage(file = f"img/background2.png")
                     background = my_canvas.create_image(
                     405, 180,
                     image=background_img)
@@ -606,11 +608,6 @@ def main():
             if password != confirm:
                 messagebox.showinfo("Status", "Confirmation does not match")
                 return
-
-            hostname = socket.gethostname()
-            ip_addr = socket.gethostbyname(hostname)
-            HOST = str(ip_addr)
-            PORT = 1239
 
             cli = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
