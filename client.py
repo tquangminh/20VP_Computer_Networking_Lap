@@ -3,7 +3,7 @@ from importlib.resources import path
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-from tkinter import filedialog
+from tkinter import filedialog as fd
 from tkinter import font as tkFont
 from tkinter.filedialog import askopenfile
 import socket
@@ -226,7 +226,7 @@ def main():
                             cli.sendall("Text".encode("utf8"))
                             cli.recv(1024)
 
-                            tittle = tittleBox.get()
+                            tittle = tittleBox.get().strip()
                             cli.sendall(tittle.encode("utf8"))
                             cli.recv(1024)
 
@@ -280,7 +280,7 @@ def main():
 
                         def Submit():
                             try: 
-                                filename = filename3
+                                filename = filename2
                             except:
                                 messagebox.showinfo('File not found')
                                 can_addTypeNote.destroy()
@@ -290,7 +290,7 @@ def main():
                             cli.sendall("Image".encode("utf8"))
                             cli.recv(1024)
 
-                            tittle = tittleBox.get()
+                            tittle = tittleBox.get().strip()
                             cli.sendall(tittle.encode("utf8"))
                             cli.recv(1024)
 
@@ -324,7 +324,7 @@ def main():
                         Fira_Sans = tkFont.Font(family='Fira Sans', size=13, weight=tkFont.BOLD)
                         def UploadAction(event=None): 
                             global filename2
-                            filename2 = filedialog.askopenfilename(filetypes=[('Image Files', '*.jpeg *.png *.jpg *.gif')])
+                            filename2 = fd.askopenfilename(filetypes=[('Image Files', '*.jpeg *.png *.jpg *.gif')])
                             print('Selected:', filename2)
                             pathDisplay = Label(can_addTypeNote,font = Fira_Sans, text = filename2,fg='#63cdda', bg = '#fff8ee')
                             pathDisplay.place(x = 220, y = 260, width = 400)
@@ -362,14 +362,17 @@ def main():
 
                         def Submit():
                             try: 
-                                filename = filename3
+                                filename = filename2
                             except:
                                 messagebox.showinfo('File not found')
+                                can_addTypeNote.destroy()
+                                pathEntry.destroy()
+                                fileNote()
                                 
                             cli.sendall("File".encode("utf8"))
                             cli.recv(1024)
 
-                            tittle = tittleBox.get()
+                            tittle = tittleBox.get().strip()
                             cli.sendall(tittle.encode("utf8"))
                             cli.recv(1024)
 
@@ -403,7 +406,7 @@ def main():
 
                         def UploadAction(event=None): 
                             global filename3
-                            filename3 = filedialog.askopenfilename()
+                            filename3 = fd.askopenfilename()
                             print('Selected:', filename3)
                             pathDisplay = Label(can_addTypeNote,font = Fira_Sans, text = filename3,fg='#63cdda', bg = '#fff8ee')
                             pathDisplay.place(x = 220, y = 260, width = 400)
@@ -459,11 +462,16 @@ def main():
                             viewNote()
                         def save():
                             global filename
+                            dir = ''
+                            dir = fd.askdirectory()
+                            if dir == '':
+                                return
                             if type == 'Text':
-                                filename = "clientDisk/" + topicSelected + ".txt"
+                                filename = dir + "/" + topicSelected + ".txt"
                                 
                             else: 
-                                filename = "clientDisk/" + os.path.basename(filename)
+                                filename = dir + "/" + os.path.basename(filename)
+
                             with open(filename, "wb") as f:
                                 f.write(content)
                             messagebox.showinfo("Saved","Saved Successully")
