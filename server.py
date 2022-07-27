@@ -1,13 +1,9 @@
-import socket
+import socket, json, threading, sqlite3, os
 import tkinter
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from tkinter.ttk import *
 from tkinter import messagebox 
-import json
-import threading
-import sqlite3
-import os
 
 # Read json user file to list
 def readFile():
@@ -117,7 +113,11 @@ def threaded_client(con, addr):
                     con.sendall("Received adding note request".encode("utf8"))
                     type = con.recv(1024).decode("utf8")
                     con.sendall("Received type note".encode("utf8"))
-                    if type == "Text":
+                    if type == "Back":
+                        continue
+                    elif type == "Back File":
+                        continue
+                    elif type == "Text":
                         tittle = con.recv(1024).decode("utf8")
                         con.sendall("Recevied tittle".encode("utf8"))
                         content = con.recv(4096).decode("utf8")
@@ -163,24 +163,28 @@ def threaded_client(con, addr):
                         cursor.execute("INSERT INTO %s (type,tittle,content) VALUES ('%s', '%s', '%s')" %(username, type, tittle, content))
                         sqliteConnection.commit()
                         con.sendall("Saved".encode("utf8"))
+                        
                         cursor.close()
                     except: 
                         con.sendall("Cannot Saved".encode("utf8"))
 
                 elif req == "View Note":
-                    sqliteConnection = sqlite3.connect('user_note.db') 
                     cursor = sqliteConnection.cursor()
                     cursor.execute("Select tittle from %s"%(username))
                     topicList = cursor.fetchall()
-                    csvTopicList = topicList[0][0]
-                    for i in topicList[1:]:
-                        csvTopicList += "," + i[0]
-
+                    csvTopicList = 'NullTopic'
+                    try:
+                        csvTopicList = topicList[0][0]
+                        for i in topicList[1:]:
+                            csvTopicList += "," + i[0]
+                    except:
+                        pass
                     con.sendall(csvTopicList.encode("utf8"))
                     topicSelected = con.recv(1024).decode("utf8")
                     if topicSelected == 'Back':
+                        con.sendall("Receive request".encode('utf8'))
                         continue   
-                    else:              
+                    else:    
                         cursor.execute("Select type, content from %s where tittle == '%s' "%(username, topicSelected))
                         type_content = cursor.fetchall()
 
@@ -207,9 +211,6 @@ def threaded_client(con, addr):
                                     bytes_read = f.read(filesize+1024)
                                     con.sendall(bytes_read)
                         cursor.close()
-                        sqliteConnection.close()
-
-
                 else:
                     break
             sqliteConnection.close()
