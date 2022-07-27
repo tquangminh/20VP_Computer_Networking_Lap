@@ -3,7 +3,7 @@ from importlib.resources import path
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-from tkinter import filedialog
+from tkinter import filedialog as fd
 from tkinter import font as tkFont
 from tkinter.filedialog import askopenfile
 import socket
@@ -25,8 +25,8 @@ def resource_path(relative_path):
 
     return os.path.join(os.path.abspath("."), relative_path)
 
-link = resource_path("show.png")
-link2 = resource_path("hide.png")
+link = resource_path("img/show.png")
+link2 = resource_path("img/hide.png")
 show = PhotoImage(file = link)
 hide = PhotoImage(file = link2)
 
@@ -61,14 +61,9 @@ def EnterIP():
     
     
     def checkIP():
-        hostname = socket.gethostname()
-        ip_addr = socket.gethostbyname(hostname)
-        HOST = str(ip_addr)
+        global HOST, PORT
+        HOST = ip_entry.get()
         PORT = 1239
-
-        if ip_entry.get() != HOST:
-            messagebox.showinfo("Status", "Wrong IP")
-            return
 
         try:
             cli = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -128,11 +123,6 @@ def main():
                 messagebox.showinfo("Status", "Password must contain no space character")
                 return
         
-        hostname = socket.gethostname()
-        ip_addr = socket.gethostbyname(hostname)
-        HOST = str(ip_addr)
-        PORT = 1239
-
         cli = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
         try:
@@ -174,7 +164,7 @@ def main():
                     highlightthickness = 0,
                     relief = "ridge")
                 
-                background_img = PhotoImage(file = f"background.png")
+                background_img = PhotoImage(file = f"img/background.png")
                 background = can_show.create_image(
                     405, 180,
                     image=background_img)
@@ -205,7 +195,7 @@ def main():
                         highlightthickness = 0,
                         relief = "ridge")
                     
-                    background_img = PhotoImage(file = f"background2.png")
+                    background_img = PhotoImage(file = f"img/background2.png")
                     background = my_canvas.create_image(
                         405, 180,
                         image=background_img)
@@ -213,6 +203,14 @@ def main():
                     my_canvas.pack(fill = "both", expand = True)
 
                     def textNote():
+                        def backAddFile():
+                            can_addTypeNote.destroy()
+                            tittleBox.destroy()
+                            text_box.destroy()
+                            cli.sendall("Back File".encode('utf8'))
+                            cli.recv(1024)
+                            addNote()
+
                         my_canvas.destroy()
                         can_addTypeNote = Canvas(frame1, width = 810, height = 360, bg = "#ffffff", 
                         bd = 0,
@@ -228,7 +226,7 @@ def main():
                             cli.sendall("Text".encode("utf8"))
                             cli.recv(1024)
 
-                            tittle = tittleBox.get()
+                            tittle = tittleBox.get().strip()
                             cli.sendall(tittle.encode("utf8"))
                             cli.recv(1024)
 
@@ -236,10 +234,12 @@ def main():
   
                             cli.sendall(text_content.encode("utf8"))
                             message = cli.recv(1024).decode("utf8")
-                            messagebox.showinfo(message)
+                            messagebox.showinfo("Status", "Saved Succesfully")
                             can_addTypeNote.destroy()
+                            tittleBox.destroy()
                             text_box.destroy()
-                            main2()
+                            addNote()
+
                         def entry_clear_tittle(e):
                             if tittleBox.get() == "Enter title":
                                 tittleBox.delete(0,END)
@@ -254,9 +254,18 @@ def main():
                         text_box.place(x=105, y=130,width=600,height=150)
                         SubmitBtn = Button(can_addTypeNote, text="Submit",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command=Submit) 
                         SubmitBtn.place(x=310, y=310, height=27, width=124)
-                        BackBtn = Button(can_addTypeNote, text="Back",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF") 
+                        BackBtn = Button(can_addTypeNote, text="Back",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command = backAddFile) 
                         BackBtn.place(x=10, y=310, height=27, width=124)
+                            
                     def imgNote():
+                        def backAddFile():
+                            can_addTypeNote.destroy()
+                            tittleBox.destroy()
+                            pathEntry.destroy()
+                            cli.sendall("Back File".encode('utf8'))
+                            cli.recv(1024)
+                            addNote()
+
                         my_canvas.destroy()
                         can_addTypeNote = Canvas(frame1, width = 810, height = 360, bg = "#ffffff", 
                         bd = 0,
@@ -270,14 +279,22 @@ def main():
                         can_addTypeNote.pack(fill = "both", expand = True)
 
                         def Submit():
+                            try: 
+                                filename = filename2
+                            except:
+                                messagebox.showinfo('File not found')
+                                can_addTypeNote.destroy()
+                                pathEntry.destroy()
+                                imgNote()
+                            
                             cli.sendall("Image".encode("utf8"))
                             cli.recv(1024)
 
-                            tittle = tittleBox.get()
+                            tittle = tittleBox.get().strip()
                             cli.sendall(tittle.encode("utf8"))
                             cli.recv(1024)
 
-                            filename = filename2
+
                             filesize =os.path.getsize(filename)
                             cli.sendall(filename.encode("utf8"))
                             cli.recv(1024)
@@ -291,10 +308,10 @@ def main():
                                 cli.sendall(bytes_read)
 
                             message = cli.recv(1024).decode("utf8")
-                            messagebox.showinfo(message)
+                            messagebox.showinfo("Status", "Saved Successfully")
                             can_addTypeNote.destroy()
                             pathEntry.destroy()
-                            main2()
+                            addNote()
 
                         def entry_clear_tittle(e):
                             if tittleBox.get() == "Enter title":
@@ -307,7 +324,7 @@ def main():
                         Fira_Sans = tkFont.Font(family='Fira Sans', size=13, weight=tkFont.BOLD)
                         def UploadAction(event=None): 
                             global filename2
-                            filename2 = filedialog.askopenfilename(filetypes=[('Image Files', '*.jpeg *.png *.jpg *.gif')])
+                            filename2 = fd.askopenfilename(filetypes=[('Image Files', '*.jpeg *.png *.jpg *.gif')])
                             print('Selected:', filename2)
                             pathDisplay = Label(can_addTypeNote,font = Fira_Sans, text = filename2,fg='#63cdda', bg = '#fff8ee')
                             pathDisplay.place(x = 220, y = 260, width = 400)
@@ -316,16 +333,20 @@ def main():
                         pathEntry = Button(can_addTypeNote, text='Select Image',font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command=UploadAction)
                     
                         pathEntry.place(x=105, y=150,width=600,height=100)
-                        
-
-
+                    
                         SubmitBtn = Button(can_addTypeNote, text="Submit",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command=Submit)
-
-                        SubmitBtn.place(x=343, y=310, height=27, width=124)  
-                        BackBtn = Button(can_addTypeNote, text="Back",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF") 
-                        BackBtn.place(x=10, y=310, height=27, width=124)     
+                        SubmitBtn.place(x=343, y=310, height=27, width=124)       
+                        BackBtn = Button(can_addTypeNote, text="Back",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command = backAddFile) 
+                        BackBtn.place(x=10, y=310, height=27, width=124)
 
                     def fileNote():
+                        def backAddFile():
+                            can_addTypeNote.destroy()
+                            tittleBox.destroy()
+                            pathEntry.destroy()
+                            cli.sendall("Back File".encode('utf8'))
+                            cli.recv(1024)
+                            addNote()
                         my_canvas.destroy()
                         can_addTypeNote = Canvas(frame1, width = 810, height = 360, bg = "#ffffff", 
                         bd = 0,
@@ -338,17 +359,24 @@ def main():
 
                         can_addTypeNote.pack(fill = "both", expand = True)
 
-                       
 
                         def Submit():
+                            try: 
+                                filename = filename2
+                            except:
+                                messagebox.showinfo('File not found')
+                                can_addTypeNote.destroy()
+                                pathEntry.destroy()
+                                fileNote()
+                                
                             cli.sendall("File".encode("utf8"))
                             cli.recv(1024)
 
-                            tittle = tittleBox.get()
+                            tittle = tittleBox.get().strip()
                             cli.sendall(tittle.encode("utf8"))
                             cli.recv(1024)
 
-                            filename = filename3
+                            
                             filesize =os.path.getsize(filename)
                             cli.sendall(filename.encode("utf8"))
                             cli.recv(1024)
@@ -362,10 +390,11 @@ def main():
                                 cli.sendall(bytes_read)
 
                             message = cli.recv(1024).decode("utf8")
-                            messagebox.showinfo(message)
+                            messagebox.showinfo("Status", "Saved Successfully")
                             can_addTypeNote.destroy()
+                            tittleBox.destroy()
                             pathEntry.destroy()
-                            main2()
+                            addNote()
                             
                         def entry_clear_tittle(e):
                             if tittleBox.get() == "Enter title":
@@ -377,28 +406,29 @@ def main():
 
                         def UploadAction(event=None): 
                             global filename3
-                            filename3 = filedialog.askopenfilename()
+                            filename3 = fd.askopenfilename()
                             print('Selected:', filename3)
                             pathDisplay = Label(can_addTypeNote,font = Fira_Sans, text = filename3,fg='#63cdda', bg = '#fff8ee')
                             pathDisplay.place(x = 220, y = 260, width = 400)
 
-
-
-                       
-
                         pathEntry = Button(can_addTypeNote, text='Select File',font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command=UploadAction)
                         pathEntry.place(x=105, y=150,width=600,height=100)
 
-                       
                         SubmitBtn = Button(can_addTypeNote, text="Submit",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command=Submit) 
                         SubmitBtn.place(x=343, y=310, height=27, width=124)  
-                        BackBtn = Button(can_addTypeNote, text="Back",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF") 
-                        BackBtn.place(x=10, y=310, height=27, width=124)   
-                       
+                        BackBtn = Button(can_addTypeNote, text="Back",font=Fira_Sans, borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command = backAddFile)                         
+                        BackBtn.place(x=10, y=310, height=27, width=124)
 
                     def backAddNote():
                         my_canvas.destroy()
+                        cli.sendall("Back".encode('utf8'))
+                        cli.recv(1024)
                         main2()
+
+                    Fira_Sans = tkFont.Font(family='Fira Sans', size=13, weight=tkFont.BOLD)
+                   
+                    textBtn = Button(my_canvas, text="Text",font=Fira_Sans,borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command=textNote)
+                    textBtn.place(x=235, y=40, height=40, width=350)
                 
 
                     Fira_Sans = tkFont.Font(family='Fira Sans', size=13, weight=tkFont.BOLD)
@@ -424,15 +454,24 @@ def main():
                         topicListBox.destroy()     
                         my_canvas.destroy()
                         cli.sendall('Back'.encode('utf8'))
+                        cli.recv(1024)
                         main2()
                     def view():
+                        def backViewFile():
+                            can_viewNote.destroy()
+                            viewNote()
                         def save():
                             global filename
+                            dir = ''
+                            dir = fd.askdirectory()
+                            if dir == '':
+                                return
                             if type == 'Text':
-                                filename = "clientDisk/" + topicSelected + ".txt"
+                                filename = dir + "/" + topicSelected + ".txt"
                                 
                             else: 
-                                filename = "clientDisk/" + os.path.basename(filename)
+                                filename = dir + "/" + os.path.basename(filename)
+
                             with open(filename, "wb") as f:
                                 f.write(content)
                             messagebox.showinfo("Saved","Saved Successully")
@@ -457,7 +496,10 @@ def main():
                             content = cli.recv(filesize + 1024)
 
                         if type == 'Text': 
-                            can_viewNote.create_text(520,190,text=content, font=("Comic Sans MS",24,'bold'),fill="#400000")
+                            t = Text(can_viewNote,
+                            bg = "light cyan", font=("Comic Sans MS",13))
+                            t.insert(END,content)
+                            t.place(x = 100, y = 71, height = 500, width = 500)
                         elif type == 'Image':
                             image = Image.open(io.BytesIO(content))
                             imageresize = resized = image.resize((500, 500),Image.ANTIALIAS)
@@ -468,24 +510,24 @@ def main():
                             panel.place(x = 100, y = 71, height = 500, width = 500)
                             
                         else: 
-                            can_viewNote.create_text(520,190,text=filename, font=("Comic Sans MS",24,'bold'),fill="#400000")
+                            f = Text(can_viewNote,
+                            bg = "light yellow", font=("Comic Sans MS",13))
+                            f.insert(END,filename)
+                            f.place(x = 100, y = 71, height = 500, width = 500)
                         
-                        saveBtn = Button(can_viewNote, text="Save",font=Fira_Sans,borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command=save)
+                        saveBtn = Button(can_viewNote, text="Save",font='Fira_Sans',borderwidth=2,bg="#63cdda",fg = "#FFFFFF", command=save)
 
                         saveBtn.place(x=400, y=616, height=40, width=200)
 
-                        backBtn = Button(can_viewNote, text = "Back", font = Fira_Sans, borderwidth= 2, bg="#63cdda",fg = "#FFFFFF")
-                        backBtn.place(x = 100, y = 616, height = 40, width = 200)
+                        backBtn = Button(can_viewNote, text = "Back", font = 'Fira_Sans', borderwidth= 2, bg="#63cdda",fg = "#FFFFFF", command = backViewFile)
+                        backBtn.place(x = 100, y = 616, height = 40, width = 200, )
                         can_viewNote.mainloop()
-
-
-                        
-                            
-
 
                     can_show.destroy()
                     cli.sendall("View Note".encode("utf8"))
                     csvTopicList = cli.recv(1024).decode("utf8")
+                    if csvTopicList == 'NullTopic':
+                        csvTopicList = ''
                     TopicList = map(str.strip, csvTopicList.split(','))
                     
                     my_canvas = Canvas(frame1,
@@ -496,7 +538,7 @@ def main():
                     highlightthickness = 0,
                     relief = "ridge")
                 
-                    background_img = PhotoImage(file = f"background2.png")
+                    background_img = PhotoImage(file = f"img/background2.png")
                     background = my_canvas.create_image(
                     405, 180,
                     image=background_img)
@@ -580,11 +622,6 @@ def main():
             if password != confirm:
                 messagebox.showinfo("Status", "Confirmation does not match")
                 return
-
-            hostname = socket.gethostname()
-            ip_addr = socket.gethostbyname(hostname)
-            HOST = str(ip_addr)
-            PORT = 1239
 
             cli = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
