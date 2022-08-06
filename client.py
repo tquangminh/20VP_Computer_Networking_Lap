@@ -482,7 +482,7 @@ def main():
                         else: 
                             f = Text(can_viewNote,
                             bg = "light yellow", font=("Comic Sans MS",13))
-                            f.insert(END,filename)
+                            f.insert(END,filename[5:])
                             f.config(state=DISABLED)
                             f.place(x = 100, y = 71, height = 500, width = 500)
                         
