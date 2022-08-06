@@ -232,8 +232,6 @@ def start_server():
             print("Disconnect")
             break
             
-
-
 #server_thread
 def server_thread():
     root.config(bg="#2ecc71")
@@ -277,7 +275,6 @@ def add_and_close():
 	stop_thread = True
 	s.close()
 	print("Close Server")
-
 
 #MAIN
 list_user = []
