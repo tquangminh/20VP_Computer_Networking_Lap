@@ -566,13 +566,22 @@ def main():
             if username == "Enter username" or username == "":
                 messagebox.showinfo("Status", "Please enter username")
                 return
+            if len(username)<5:
+                messagebox.showinfo("Status", "username must contain atleast 5 character")
+                return
             for i in username:
                 if i == " ":
                     messagebox.showinfo("Status", "Username must contain no space character")
                     return
+                if ord(i) < 48 or (ord(i) >57 and ord(i) < 97) or ord(i) > 122:
+                    messagebox.showinfo("Status", "invalid user name, username must include only a-z and 0-9")
+                    return
 
             if password == "Enter password" or password == "":
                 messagebox.showinfo("Status", "Please enter password")
+                return
+            if len(password)<3:
+                messagebox.showinfo("Status", "Password must contain at least 3 character")
                 return
             for i in password:
                 if i == " ":
